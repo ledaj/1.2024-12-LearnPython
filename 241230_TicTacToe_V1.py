@@ -34,7 +34,7 @@ def playerMove(player):
     while True:
         try:
             choice = int(input("Enter your move (1-9) : ").strip())
-            if choice in range(1,9):
+            if choice in range(1,10):
                 if board[choice - 1] == "-":
                     board[choice - 1] = player
                     print()

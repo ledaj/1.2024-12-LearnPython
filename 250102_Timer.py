@@ -45,6 +45,7 @@ setTimerDuration()
 print()
 while isTimerSet():
     launchTimer()
+    print()
     while clockTime() < timerDeadline:
         print("Time remaining : ", timeRemaining(), end='\r')
         time.sleep(1)
