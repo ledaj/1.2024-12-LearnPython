@@ -3,79 +3,59 @@ import time
 import datetime
 
 # Variables de base
-seconds = time.time()
-localTime = time.ctime(seconds)
-currentTime = datetime.datetime.now()
-currentTimeNextYear = datetime.datetime(currentTime.year + 1, 1, 1)
-currentTimeNextYearAlt = currentTime + datetime.timedelta(days=365)
+global timerDuration
+global timerDeadline
 
-timerTime = 0
-timerDeadline = 0
 
-# blocks
+#methods
 
-## TO know time I ask the clock what time it is
 def clockTime():
     return time.time()
 
-## TO set the countdown I ask the timer value
+def setTimerDuration():
+    global timerDuration
+    timerDuration = int(input("Enter the duration of the timer in seconds : "))
+    return timerDuration
 
-def setTimer():
-    global timerTime
-    timerTime = int(input("Enter the countdown time in seconds : "))
-    return timerTime
-
-## TO set the deadline I add the timer to the actual time
+def isTimerSet():
+    return timerDuration > 0
 
 def setDeadline():
-    global timerTime
-    return timerTime + clockTime()
+    global timerDeadline
+    timerDeadline = timerDuration + clockTime()
+    return timerDeadline
 
-## TO run the countdown I ask for a go
+def timeRemaining():
+    t = timerDeadline - clockTime()
+    return round(t,1)
 
-def runCountdown():
-    input("Press Enter to start the countdown")
+def resetTimer():
+    global timerDuration
+    global timerDeadline
+    timerDuration = 0
+    timerDeadline = 0
+
+def launchTimer():
+    input("Press Enter to start the timer.")
+    setDeadline()
     return True
-
-## TO pause the countdown I ask for a pause
-
-def pauseCountdown():
-    input("Press Enter to pause the countdown")
-    return True
-
-## TO stop the countdown I ask for an input
-
-def stopCountdown():  
-    input("Press Enter to stop the countdown")
-    return True 
-
-## TO obtain the remaining time I substrack the time to the deadline
-
-def remainingTime():
-    global timerTime
-    return timerTime - clockTime()
-
-
-## TO display the countdown I print the remaining time
-
-
-def displayCountdown():
-    global timerTime
-    print("Time remaining : ", timerTime)
-
-## TO check if countdown over I compare the deadline and the actual time
-
-def countdownOver():
-    global timerTime
-    return timerTime < clockTime()
-
-## TO signal countdown over I print the alarm
-
-
-## TO know if start over I ask for input
-
-## TO start over I clean the variables and launch again
-
+    
 # main init
-setTimer()
-runCountdown()
+setTimerDuration()
+print()
+while isTimerSet():
+    launchTimer()
+    while clockTime() < timerDeadline:
+        print("Time remaining : ", timeRemaining(), end='\r')
+        time.sleep(1)
+    print()
+    print("Time's up !")
+    resetTimer()
+    print()
+    setTimerDuration()
+
+'''
+end='\r' is a carriage return, 
+it moves the cursor to the beginning of the line, 
+so that the next print will overwrite the previous one.
+'''
