@@ -2,19 +2,16 @@ import random
 import logging
 
 # Variables de base
-board = ["-" for x in range(9)]
+board = ["-" for x in range(9)] #le tableau est une liste de 0 à 8
 player = 'X'
-is_WinState = False
-is_GameOver = False
 
 def printBoard(): 
-  # POUR créer le tableau à 9 cases je crée troiw lignes de trois cases
+  # POUR afficher le tableau à 9 cases je crée trois strings qui affichent le contenu du tableau et je les imprime
 
     row1 = "|{}|{}|{}|".format(board[0], board[1], board[2])
     row2 = "|{}|{}|{}|".format(board[3], board[4], board[5])
     row3 = "|{}|{}|{}|".format(board[6], board[7], board[8])
     
-    #POUR afficher le tableau je l'imprime avec du vide autour
     print()
     print(row1)
     print(row2)
@@ -33,7 +30,7 @@ def playerMove(player):
     print()
     while True:
         try:
-            choice = int(input("Enter your move (1-10) : ").strip())
+            choice = int(input("Enter your move (1-9) : ").strip())
             if choice in range(1,10):
                 if board[choice - 1] == "-":
                     board[choice - 1] = player
@@ -95,7 +92,7 @@ def is_WinState(player): # POUR déteminer la victoire:
         else:
             return False
 
-def is_GameOver(board): # POUR vérifier la fin de partie, je vérifie si toutes les cases sont pleines
+def is_GameOver(): # POUR vérifier la fin de partie, je vérifie si toutes les cases sont pleines
     return True if "-" not in board else False
     
 def gameLoop(player): # Boucle de jeu
@@ -116,7 +113,7 @@ def gameLoop(player): # Boucle de jeu
             print ("Player O WINS !")
             newGame(player,board)
             break
-        elif is_GameOver(board) == True: # le tableau est plein ?
+        elif is_GameOver() == True: # le tableau est plein ?
             print("Game Over.")
             print ("Nobody wins.")
             newGame(player,board)
