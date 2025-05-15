@@ -18,41 +18,57 @@ def printBoard():
     print(row3) 
     print() 
 
-def swapPlayer(player) : 
+def swapPlayer() : 
   # POUR changer de joueur j'examine la valeur du player
     return 'X' if player == 'O' else 'O'
 
-def playerMove(player): 
-  # POUR jouer son tour, j'affiche le tableau, je recueille le choix du joueur et je le remplace dans le tableau
+def declareActivePlayer():
     print("Your turn, player {}.".format(player))
-    print()
-    printBoard()
-    print()
-    while True:
+
+def getValidInput():
+    while True :
         try:
-            choice = int(input("Enter your move (1-9) : ").strip())
-            if choice in range(1,10):
-                if board[choice - 1] == "-":
-                    board[choice - 1] = player
+            Input = input("Enter your move (1-9) : ").strip()
+            playerInput = int(Input) - 1
+
+            if playerInput not in range(0,9):
+                print()    
+                print("Out of range.")
+                print("Try again player {}.".format(player)) 
+                print()
+
+            if board [playerInput] != "-":
                     print()
-                    print("Player {}, in {}".format(player,choice))
-                    print()
-                    break
-                else:
-                    print()    
                     print("That space is already taken.")
-                    print("Try again player {}.".format(player))                       
+                    print("Try again player {}.".format(player)) 
+                    print()
+
             else:
-                print()
-                print("Not a valid number.")
-                print("Try again player {}.".format(player))
-                print("Try again player {}.".format(player))
-                print()
-        except:        
+                return playerInput
+        
+        except ValueError:
             print()
             print("Not a number.")
             print("Try again player {}.".format(player))
-            print() 
+            print()           
+
+def isBoardCellEmpty(input):
+     if board [input - 1] == "-":
+         return True
+
+
+def playerMove(player): 
+  # POUR jouer son tour, j'affiche le tableau, je recueille le choix du joueur et je le remplace dans le tableau
+    declareActivePlayer()
+
+    printBoard()
+
+    choice = getValidInput()
+    board[choice] = player
+
+    print()
+    print("Player {}, in {}".format(player,choice))
+    print()
 
 def gameStart(player, board): 
   #POUR lancer la partie, je tire le premier joueur
@@ -69,7 +85,7 @@ def gameStart(player, board):
     gameLoop(player)
 
 
-def is_WinState(player): # POUR déteminer la victoire: 
+def isWinState(player): # POUR déteminer la victoire: 
         # je vérifie les lignes entières ?
         if board[0] == board[1] == board[2] == player:
             return True
@@ -92,12 +108,12 @@ def is_WinState(player): # POUR déteminer la victoire:
         else:
             return False
 
-def is_GameOver(): # POUR vérifier la fin de partie, je vérifie si toutes les cases sont pleines
+def isGameOver(): # POUR vérifier la fin de partie, je vérifie si toutes les cases sont pleines
     return True if "-" not in board else False
     
 def gameLoop(player): # Boucle de jeu
     while True:
-        if is_WinState("X") == True: # victoire atteinte pour X ?
+        if isWinState("X") == True: # victoire atteinte pour X ?
             print()
             printBoard()
             print()
@@ -105,7 +121,7 @@ def gameLoop(player): # Boucle de jeu
             print("Player X WINS !")
             newGame(player,board)
             break
-        elif is_WinState("O") == True: # victoire atteinte pour O ?
+        elif isWinState("O") == True: # victoire atteinte pour O ?
             print()
             printBoard()
             print()
@@ -113,14 +129,14 @@ def gameLoop(player): # Boucle de jeu
             print ("Player O WINS !")
             newGame(player,board)
             break
-        elif is_GameOver() == True: # le tableau est plein ?
+        elif isGameOver() == True: # le tableau est plein ?
             print("Game Over.")
             print ("Nobody wins.")
             newGame(player,board)
             break
         else: # on continue à jouer
             playerMove(player)
-            player = swapPlayer(player)
+            player = swapPlayer()
     
 def newGame(player,board): # POUR relancer une nouvelle partie, je demande au joueur et lance gameStart ou break en fonction
     print("Try again ?")

@@ -6,7 +6,6 @@ import datetime
 global timerDuration
 global timerDeadline
 
-
 #methods
 
 def clockTime():
