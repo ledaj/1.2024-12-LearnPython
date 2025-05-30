@@ -16,4 +16,3 @@ def binarySearch(number, list):
     return None
 
 print(binarySearch(number, [1, 3, 5, 7, 9]))
-print(number)

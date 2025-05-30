@@ -28,3 +28,5 @@ def checkBagOfLetters():
 
 def removeLetterFromBag(letter):
     bagOfLetters.remove(letter)
+
+checkBagOfLetters
