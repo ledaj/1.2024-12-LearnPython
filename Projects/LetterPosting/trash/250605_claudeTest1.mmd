@@ -1,0 +1,66 @@
+classDiagram
+    class Letter {
+        +str sender
+        +str recipient
+        +str address
+        +str content
+        +str priority
+        +bool delivered
+        
+        +__init__(sender, recipient, address, content, priority)
+        +__str__() str
+    }
+
+    class Location {
+        +str name
+        +str address
+        +list~Letter~ letters_to_pickup
+        +list~Letter~ letters_delivered
+        
+        +__init__(name, address)
+        +add_outgoing_letter(letter)
+        +receive_letter(letter)
+    }
+
+    class Player {
+        +str name
+        +Location current_location
+        +list~Letter~ mail_bag
+        +int max_capacity
+        +int score
+        
+        +__init__(name)
+        +pickup_letters(location)
+        +deliver_letter(letter, location) bool
+    }
+
+    class DeliveryGame {
+        +dict~str,Location~ locations
+        +Player player
+        +bool game_running
+        
+        +__init__()
+        +setup_world()
+        +display_status()
+        +display_location_info()
+        +move_player(location_key) bool
+        +start_game()
+        +game_loop()
+        +handle_delivery()
+        +handle_movement()
+    }
+
+    DeliveryGame "1" --> "1..*" Location : manages
+    DeliveryGame "1" --> "1" Player : controls
+    Player "1" --> "0..*" Letter : carries in mail_bag
+    Player "1" --> "1" Location : current_location
+    Location "1" --> "0..*" Letter : letters_to_pickup
+    Location "1" --> "0..*" Letter : letters_delivered
+
+    note for Letter "Represents a mail item with\nsender/recipient information\nand delivery status"
+    
+    note for Location "Physical locations in the game world\nwhere letters can be picked up\nor delivered"
+    
+    note for Player "The postman character with\ninventory management and\nmovement capabilities"
+    
+    note for DeliveryGame "Main game controller managing\nworld state, game loop,\nand user interactions"

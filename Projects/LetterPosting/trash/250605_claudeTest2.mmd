@@ -1,0 +1,93 @@
+classDiagram
+    class Letter {
+        +str recipient
+        +str address
+        +str location
+        +bool delivered
+        +__str__() str
+    }
+
+    class LetterDeliveryGame {
+        -tk.Tk root
+        -int current_day
+        -int score
+        -int letters_delivered
+        -int wrong_deliveries
+        -bool game_running
+        -float day_start_time
+        -int day_duration
+        -list~Letter~ daily_letters
+        -dict~str,list~ sorted_letters
+        -list~str~ locations
+        -dict~str,list~ location_addresses
+        -ttk.Label day_label
+        -ttk.Label time_label
+        -ttk.Label score_label
+        -ttk.Label delivered_label
+        -ttk.Label wrong_label
+        -tk.Listbox unsorted_listbox
+        -dict~str,ttk.Frame~ location_frames
+        -dict~str,tk.Listbox~ location_listboxes
+        -dict~str,ttk.Button~ delivery_buttons
+        -ttk.Button start_button
+        -ttk.Button next_day_button
+        
+        +__init__()
+        +setup_ui()
+        +setup_info_panel(parent)
+        +setup_sorting_area(parent)
+        +setup_delivery_area(parent)
+        +setup_address_register(parent)
+        +setup_controls(parent)
+        +generate_daily_letters()
+        +update_unsorted_display()
+        +update_sorted_displays()
+        +sort_letter(target_location)
+        +deliver_letter(location)
+        +start_day()
+        +update_timer()
+        +end_day()
+        +next_day()
+        +reset_game()
+        +update_displays()
+        +run()
+    }
+
+    class tkinter_components {
+        <<external>>
+        +Tk
+        +Frame
+        +Label
+        +Button
+        +Listbox
+        +Notebook
+        +Text
+        +Scrollbar
+    }
+
+    class random_module {
+        <<external>>
+        +choice()
+        +randint()
+    }
+
+    class time_module {
+        <<external>>
+        +time()
+    }
+
+    class messagebox {
+        <<external>>
+        +showinfo()
+        +showwarning()
+    }
+
+    LetterDeliveryGame --> Letter : creates/manages
+    LetterDeliveryGame --> tkinter_components : uses
+    LetterDeliveryGame --> random_module : uses
+    LetterDeliveryGame --> time_module : uses
+    LetterDeliveryGame --> messagebox : uses
+
+    note for LetterDeliveryGame "Main game controller class that manages:\n- Game state and timing\n- UI components and layout\n- Letter sorting and delivery logic\n- Score calculation and progression"
+    
+    note for Letter "Data class representing a mail item\nwith delivery information"
