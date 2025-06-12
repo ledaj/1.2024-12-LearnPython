@@ -1,0 +1,67 @@
+classDiagram
+    class letter {
+        +str letterID
+        +str recipientID
+        +str postedID
+        +bool isMailed
+        
+        +__init__(letterID, recipientID)
+        +mail(postedID)
+    }
+
+    class mailbox {
+        +str boxID
+        +str Adress
+        +bool hasMail
+        +str color
+        +list containing
+        
+        +__init__(boxID, Adress)
+        +receiveMail(letterID)
+    }
+
+    class GameState {
+        <<module level>>
+        +int postedLetters
+        +int score
+        +list~letter~ letters
+        +list~mailbox~ mailboxes
+        +Tk root
+        +Label ShowScore
+        +StringVar LetterAdressText
+        +Label ShowFirstLetter
+        +Button[] mailBoxUI
+        
+        +checkLetters()
+        +checkMailboxes()
+        +ClickButton(postedLetters, score)
+    }
+
+    class tkinter_components {
+        <<external>>
+        +Tk
+        +Label
+        +Button
+        +StringVar
+    }
+
+    class csv_module {
+        <<external>>
+        +reader()
+    }
+
+    GameState --> letter : creates/manages
+    GameState --> mailbox : creates/manages
+    GameState --> tkinter_components : uses
+    GameState --> csv_module : planned usage
+
+    letter "0..*" --> "0..1" mailbox : posted to
+    mailbox "1" --> "0..*" letter : contains
+
+    note for letter "Represents a mail item with\nrecipient ID and posting status"
+    
+    note for mailbox "Represents a destination mailbox\nwith address and mail collection"
+    
+    note for GameState "Module-level game state managing\nletters, mailboxes, UI components\nand game logic functions"
+    
+    note for GameState "TODO: Implement proper posting\nmechanic, score management,\nCSV integration, and game over"
