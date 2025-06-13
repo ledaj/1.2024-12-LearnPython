@@ -1,0 +1,54 @@
+classDiagram
+    class Game {
+        - current_time: str
+        - money: float
+        - reputation: int
+        - jobs: List~Job~
+        - trucks: List~Truck~
+        - notifications: List~Notification~
+        + run()
+        + show_dashboard()
+        + show_inbox()
+        + show_map()
+        + show_schedule()
+        + end_day()
+    }
+
+    class Job {
+        - id: int
+        - name: str
+        - pay: float
+        - deadline: str
+        - fragile: bool
+        - accepted: bool
+        + accept()
+    }
+
+    class Truck {
+        - name: str
+        - destination: str
+        - fuel_level: str
+        - status: str
+        + reroute()
+        + deliver()
+    }
+
+    class Notification {
+        - message: str
+        - severity: str
+        + display()
+    }
+
+    class Map {
+        - active_routes: list
+        - events: list
+        + show_routes()
+        + reroute_truck()
+    }
+
+    Game --> Job : uses
+    Game --> Truck : manages
+    Game --> Notification : triggers
+    Game --> Map : shows
+    Truck --> Job : assigned to
+    Map --> Truck : reroutes
