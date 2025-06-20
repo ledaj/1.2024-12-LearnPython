@@ -1,43 +1,42 @@
 import time
-import tkinter as tk
 
+# No need for tkinter here since you're using input() and print()
 class Game:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Game Timer")
+    def __init__(self):
         self.isGameRunning = False
         self.dayStartTime = 0
-        self.dayDuration = 10  # in seconds
+        self.dayDuration = 10  # 10 seconds per day for testing
 
-        # GUI Elements
-        self.label = tk.Label(root, text="Press Start to begin", font=("Arial", 16))
-        self.label.pack(pady=20)
-
-        self.start_button = tk.Button(root, text="Start Timer", command=self.startDay, font=("Arial", 14))
-        self.start_button.pack(pady=10)
+    def launchTimer(self):
+        input("Press Enter to start the timer.")
+        self.startDay()
 
     def startDay(self):
-        if not self.isGameRunning:
-            self.isGameRunning = True
-            self.dayStartTime = time.time()
-            self.updateTimer()
+        self.isGameRunning = True
+        self.dayStartTime = time.time()
+        print("DEBUG : isGameRunning :", self.isGameRunning)
+        self.updateTimer()
 
     def updateTimer(self):
-        if self.isGameRunning:
+        while self.isGameRunning:
             elapsedTime = time.time() - self.dayStartTime
-            remaining = round(max(0, self.dayDuration - elapsedTime), 1)
+            remaining = max(0, self.dayDuration - elapsedTime)
 
-            if remaining > 0:
-                self.label.config(text=f"Time remaining: {remaining:.1f} seconds")
-                self.root.after(100, self.updateTimer)  # smoother update (100ms)
-            else:
+            print(f"Time remaining: {remaining:.1f} seconds", end='\r')
+
+            if remaining <= 0:
                 self.endDay()
+                break
+
+            time.sleep(1)
 
     def endDay(self):
+        print("\nDEBUG : endDay")
         self.isGameRunning = False
-        self.label.config(text="Game Over!")
+        print("DEBUG : isGameRunning :", self.isGameRunning)
+        print("GameOver")
 
-# Tkinter setup
-root = tk.Tk()
-game = Game(root)
-root.mainloop()
+theGame = Game()
+
+theGame.launchTimer()
+
