@@ -1,27 +1,16 @@
 from tkinter import *
 import csv
 import time
+import os
 
 """STORY
 You have 2 mailboxes and a stack of letters.
-You post the letters one by one to the mailboxes and try to match the adresses. This is your score.
+You post the letters one by one to the mailboxes and try to match the addresses. This is your score.
 Once you have no mail left, game over.
 """
 
-"""TO DO
-- Implement posting mechanic to put letters in mailboxes on ClickButton Function
-- Implement scoreManager to check if letters are rightly posted
-    I want to compare letter.recipientID et letter.postedID to know if a letter is rightly posted
-    I want to read mailbox.containing to access letters in said mailbox.
-    I want to match ID to string of letters. For example, M1 = "Mr. Green", L1 = "for" + M1. Il me faut une matrice. Et ensuite je peux l'auto remplir avec le CSV peut-être ? https://www.geeksforgeeks.org/python-matrix/
-- Implement game over (mis en place une classe game pour éviter les variables globales. Ça casse l'UI et certaines fonctions pour l'instant. À corriger.)
-- Implement csv reader to autocreate letters and mailboxes according to table. https://www.geeksforgeeks.org/how-to-create-a-list-of-object-in-python-class/ https://stackoverflow.com/questions/49614798/how-to-extract-specific-data-from-a-csv-file-with-given-parameters
-- CSV implemented. Ça marche avec les mailboxes et les méthodes de Vlookup. Reste à mettre les lettres en face et à coder la vérif.
-- Implemented Timer from Claude. To DO : fix the timer script to use the simplified Claude writing. Le code suppose un bouton pour lancer la journée et un temps fixe de journée. Il manque la prépa, le calendrier et le calcul du score. 
-- j'aimerais randomiser les lettres à partir d'un CSV et créer les assets visuels associés qu'on verrait dans l'affichage de la lettre actuelle.
-"""
-
 #---- THERE WAS DATA
+
 
 ##--- LETTERS
 
@@ -37,42 +26,25 @@ class Letter():
         self.postedID = postedID
         self.is_mailed = True
 
-"""
-letter1 = letter("L1", "M1")
-letter2 = letter("L2", "M2")
-letters = [letter1, letter2]
-
-def checkLetters():
-    print("DEBUG_Letters")
-    for letter in letters:
-        print("Adress: For {adress}; mailed: {status}".format(adress=letter.recipientID, status = letter.is_mailed))
-
-checkLetters()
-"""
 ##--- MAILBOXES
 
 class Mailbox():
-    def __init__(self, boxID, adress, color="white"):
+    def __init__(self, boxID, address, color="white"):
         self.boxID = boxID
-        self.address = adress
+        self.address = address
         self.has_mail = False
-        self.color = "white"
+        self.color = color
         self.containing = []
     
     def receiveMail(self, letter):
         self.containing.append(letter)
         self.has_mail = True
 
-"""mailbox1 = mailbox("M1","Mr.Red")
-mailbox2 = mailbox("M2","Mr.Green")
-mailboxes = [mailbox1, mailbox2]
+##--- PATH
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def checkMailboxes():
-    print("DEBUG_Mailboxes")
-    for mailbox in mailboxes:
-        print("On the box is written a name: {name}".format(name = mailbox.adress) + "Box contains mail: {status}".format(status=mailbox.has_mail))
-
-checkMailboxes()"""
+letters_path = os.path.join(BASE_DIR, "Letters.csv")
+mailboxes_path = os.path.join(BASE_DIR, "Mailboxes.csv")
 
 #---- THERE WAS A GAME CONTROLLER
 # GameOver : Timer ran out
@@ -98,15 +70,15 @@ class Game:
         self.current_day = 1
 
 # DATA
-        self.all_letters = self.load_letters()
-        """("letters.csv")"""
-        self.mailboxes = self.load_mailboxes()
-        """("mailboxes.csv")"""
+        self.all_letters = self.load_letters(letters_path)
+        self.mailboxes = self.load_mailboxes(mailboxes_path)
         self.letters_today = []
 
 # UI ELEMENTS
         self.timer_label = Label(root, text="Press Start to begin", font=("Arial", 16))
         self.timer_label.pack(pady=20)
+        self.day_label = Label(root, text=f"Day {self.current_day}", font=("Arial", 12))
+        self.day_label.pack()
 
         self.score_label = Label(root, text="Score: 0", font=("Arial", 12),fg="green")
         self.score_label.pack()
@@ -122,46 +94,36 @@ class Game:
 
 # METHODS
 
-    def load_letters(self):
-        letter1 = Letter("L1", "M1", 1)
-        letter2 = Letter("L2", "M2", 2)
-        letter3 = Letter("L3", "M1", 2)
-        letter4 = Letter("L4", "M2", 2)
-        letters = [letter1, letter2, letter3, letter4]
-        return letters
-        """
+    def load_letters(self, filename):
         letters = []
         try:
             with open(filename, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
-                    letters.append(Letter(row['LetterID'], row['RecipientID'], row['Day']))
+                    letters.append(Letter(row['letterID'], row['recipientID'], row['day']))
         except FileNotFoundError:
             print(f"Error: Could not find {filename}")
         return letters
-        """
 
-    def load_mailboxes(self):
-        mailbox1 = Mailbox("M1","Mr.Red","red")
-        mailbox2 = Mailbox("M2","Mr.Green","green")
-        mailboxes = [mailbox1, mailbox2]
-        return mailboxes
-        """
+    def load_mailboxes(self, filename):
         mailboxes = []
         try:
             with open(filename, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
-                    mailboxes.append(Mailbox(row['BoxID'], row['Address'], row.get('Color', 'white')))
+                    mailboxes.append(Mailbox(row['boxID'], row['address'], row.get('color', 'white')))
         except FileNotFoundError:
             print(f"Error: Could not find {filename}")
         return mailboxes
-        """
+
     def start_day(self):
         if not self.is_game_running:
             self.is_game_running = True
             self.day_start_time = time.time()
             self.letters_today = [l for l in self.all_letters if l.day == self.current_day]
+            print(f"Starting day {self.current_day} - {len(self.letters_today)} letters found.")
+            for letter in self.letters_today:
+                print(f"Letter {letter.letterID} for {letter.recipientID} on day {letter.day}")
             self.current_letter_index = 0
             self.update_letter_ui()
             self.create_mailbox_buttons()
@@ -169,21 +131,14 @@ class Game:
 
     def update_letter_ui(self):
         if self.current_letter_index < len(self.letters_today):
-            current_letter = self.letters_today[self.current_letter_index]
-            current_letter.mail(Mailbox.boxID)
-            Mailbox.receiveMail(current_letter)
-
-            # Check correctness
-            if current_letter.recipientID == Mailbox.boxID:
-                self.score += 1
+            letter = self.letters_today[self.current_letter_index]
+            recipient_mailbox = next((mb for mb in self.mailboxes if mb.boxID == letter.recipientID), None)
+            if recipient_mailbox:
+                self.letter_info_var.set(f"Deliver letter to {recipient_mailbox.address}")
             else:
-                self.wrong_deliveries += 1
-
-            self.letters_delivered += 1
-            self.current_letter_index += 1
-
-            self.score_label.config(text=f"Score: {self.score}")
-            self.update_letter_ui()
+                self.letter_info_var.set(f"Deliver letter to unknown recipient ({letter.recipientID})")
+        else:
+            self.letter_info_var.set("All letters delivered.")
 
     def create_mailbox_buttons(self):
         for btn in self.mailbox_buttons:
@@ -207,11 +162,6 @@ class Game:
             else:
                 self.end_day()            
 
-    def end_day(self):
-        self.is_game_running = False
-        self.timer_label.config(text="Game Over !")
-        self.letter_info_var.set(f"Posted {self.letters_delivered} letters | Score: {self.score}")
-
     def post_letter(self, mailbox):
         if self.current_letter_index < len(self.letters_today):
             current_letter = self.letters_today[self.current_letter_index]
@@ -225,8 +175,26 @@ class Game:
                 self.wrong_deliveries += 1
 
             self.current_letter_index += 1
-            self.score_label.config(text=f"Score: {self.score}")
+            self.score_label.config(text=f"Score: {self.score} | Wrong: {self.wrong_deliveries}")
             self.update_letter_ui()
+
+            # end early if all letters are posted FINI PARTI
+            if self.current_letter_index >= len(self.letters_today):
+                self.end_day()
+
+    def end_day(self):
+        self.is_game_running = False
+        self.timer_label.config(text="Game Over !")
+        self.letter_info_var.set(f"Posted {self.letters_delivered} letters | Score: {self.score}")
+        self.current_day += 1
+        self.day_label.config(text=f"Day {self.current_day}")   
+        has_next_day = any(letter.day == self.current_day for letter in self.all_letters)
+
+        if has_next_day:
+            self.timer_label.config(text=f"Day {self.current_day} ready. Press Start.")
+        else:
+            self.timer_label.config(text="Game Over! All days finished.")
+            self.start_button.config(state="disabled")
 
 ##---------- THE GAME TRACKS THE SCORE
 # It allocates time to play based on number of letters to deliver
@@ -234,7 +202,7 @@ class Game:
 
 ##----------- THE GAME CHECKS IF PLAYER POSTED RIGHT
 
-# IT CAN LOOKUP ADRESSES
+# IT CAN LOOKUP addressES
 """
     def find(element, matrix):
         for i in range(len(matrix)):
@@ -246,7 +214,7 @@ class Game:
         box_id_pos = find(box_id, matrix)[0]
         return matrix[box_id_pos,1]
 
-    def findBox_adress(box_id, matrix):
+    def findBox_address(box_id, matrix):
         box_id_pos = find(box_id, matrix)[0]
         return matrix[box_id_pos,2]
 
@@ -259,9 +227,9 @@ class Game:
         return matrix[box_id_pos,0]
 """
 # print('name : '+findBox_name('M2', pdMatrix))
-# print('adress : '+findBox_adress('M2', pdMatrix))
+# print('address : '+findBox_address('M2', pdMatrix))
 # print('box color : '+findBox_color('M2', pdMatrix))
-# print('box id : '+findBox_id('Mr.Red', pdMatrix))# THE GAME CAN LOOKUP ADRESSES
+# print('box id : '+findBox_id('Mr.Red', pdMatrix))# THE GAME CAN LOOKUP addressES
 """
 def find(element, matrix):
     for i in range(len(matrix)):
@@ -273,7 +241,7 @@ def findBox_name(box_id, matrix):
     box_id_pos = find(box_id, matrix)[0]
     return matrix[box_id_pos,1]
 
-def findBox_adress(box_id, matrix):
+def findBox_address(box_id, matrix):
     box_id_pos = find(box_id, matrix)[0]
     return matrix[box_id_pos,2]
 
@@ -286,7 +254,7 @@ def findBox_id(element, matrix):
     return matrix[box_id_pos,0]
 """
 # print('name : '+findBox_name('M2', pdMatrix))
-# print('adress : '+findBox_adress('M2', pdMatrix))
+# print('address : '+findBox_address('M2', pdMatrix))
 # print('box color : '+findBox_color('M2', pdMatrix))
 # print('box id : '+findBox_id('Mr.Red', pdMatrix))
 
@@ -303,21 +271,34 @@ def ClickButton(postedLetters, score):
 #UI
 ShowScore = Label(root, text="No letter posted", font=("Arial, 10"),fg="purple")
 
-LetterAdressText=StringVar(value="The next letter is for " + letters[0].recipientID)
+LetteraddressText=StringVar(value="The next letter is for " + letters[0].recipientID)
 
-ShowFirstLetter = Label(root, textvariable=LetterAdressText, font=("Arial, 10"),fg="purple")"""
+ShowFirstLetter = Label(root, textvariable=LetteraddressText, font=("Arial, 10"),fg="purple")"""
 
 """
 for mailbox in mailboxes:  
-    mailboxText=StringVar(value=mailbox.Adress)
+    mailboxText=StringVar(value=mailbox.address)
     mailBoxUI = Button(root, textvariable=mailboxText, font=("Arial, 15"), command=ClickButton)
     mailBoxUI.pack()
 
 ShowScore.pack()
 ShowFirstLetter.pack()"""
 
-
 if __name__ == '__main__':
     root = Tk()
     game = Game(root)
     root.mainloop()
+
+
+"""TO DO
+- Implement posting mechanic to put letters in mailboxes on ClickButton Function
+- Implement scoreManager to check if letters are rightly posted
+    I want to compare letter.recipientID et letter.postedID to know if a letter is rightly posted
+    I want to read mailbox.containing to access letters in said mailbox.
+    I want to match ID to string of letters. For example, M1 = "Mr. Green", L1 = "for" + M1. Il me faut une matrice. Et ensuite je peux l'auto remplir avec le CSV peut-être ? https://www.geeksforgeeks.org/python-matrix/
+- Implement game over (mis en place une classe game pour éviter les variables globales. Ça casse l'UI et certaines fonctions pour l'instant. À corriger.)
+- Implement csv reader to autocreate letters and mailboxes according to table. https://www.geeksforgeeks.org/how-to-create-a-list-of-object-in-python-class/ https://stackoverflow.com/questions/49614798/how-to-extract-specific-data-from-a-csv-file-with-given-parameters
+- CSV implemented. Ça marche avec les mailboxes et les méthodes de Vlookup. Reste à mettre les lettres en face et à coder la vérif.
+- Implemented Timer from Claude. To DO : fix the timer script to use the simplified Claude writing. Le code suppose un bouton pour lancer la journée et un temps fixe de journée. Il manque la prépa, le calendrier et le calcul du score. 
+- j'aimerais randomiser les lettres à partir d'un CSV et créer les assets visuels associés qu'on verrait dans l'affichage de la lettre actuelle.
+"""

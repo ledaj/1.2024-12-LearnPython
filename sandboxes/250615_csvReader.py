@@ -12,7 +12,7 @@ print('---IMPORT CSV')
 import csv
 csvMatrix = []
 
-with open('Projects/LetterPosting/db-mailboxes.csv', mode ='r', encoding='utf-8-sig') as file:    
+with open('Projects/LetterPosting/trash/db-mailboxes.csv', mode ='r', encoding='utf-8-sig') as file:    
      csvFile = csv.DictReader(file)
      for row in csvFile:
          csvMatrix.append(row)
@@ -46,14 +46,14 @@ find('M1',csvMatrix)"""
 """Numpy
 print('--- IMPORT NUMPY :')
 import numpy as np
-npMatrix = np.genfromtxt('Projects/LetterPosting/db-mailboxes.csv', delimiter=',')
+npMatrix = np.genfromtxt('Projects/LetterPosting/trash/db-mailboxes.csv', delimiter=',')
 print(npMatrix)
 """
 
 """PandasAndLists
 print('--- IMPORT PANDAS :')
 import pandas as pd
-pdFile = pd.read_csv('Projects/LetterPosting/db-mailboxes.csv')
+pdFile = pd.read_csv('Projects/LetterPosting/trash/db-mailboxes.csv')
 print('print pandas :')
 print(pdFile)
 print('print pandaMatrix :') #C'est celle là la bonne manière de faire
