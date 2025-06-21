@@ -136,7 +136,7 @@ class Game:
         self.start_button.config(state="disabled") #day started, start button off
 
         # Get today's letters
-        self.letters_today = [l for l in self.all_letters if l.day == self.current_day and not l.ismailed]
+        self.letters_today = [l for l in self.all_letters if l.day == self.current_day]
         self.current_letter_index = 0 # show first letter of the list
         
         print(f"Starting day {self.current_day} - {len(self.letters_today)} letters found.")
@@ -158,17 +158,18 @@ class Game:
                 recipient = recipient_mailbox.address # show match
             else:
                 recipient = f"Unknown ({letter.recipientID})"
-            total = len(self.letters_to_deliver)
             self.letter_info_var.set(f"Letter {self.current_letter_index + 1} of {total} - Deliver to {recipient}")
         else:
             self.letter_info_var.set("All letters delivered.")
 
     def create_mailbox_buttons(self):
+        # destroy previous buttons
         for btn in self.mailbox_buttons:
             btn.destroy()
         self.mailbox_buttons.clear()
 
         for mailbox in self.mailboxes:
+            # create a button for each mailbox in mailbox list
             btn = Button(self.root, text=mailbox.address, font=("Arial", 12),
                         bg=mailbox.color, command=lambda mb=mailbox: self.post_letter(mb))
             btn.pack(pady=2)
@@ -186,9 +187,10 @@ class Game:
                 self.end_day()            
 
     def post_letter(self, mailbox):
-        if self.current_letter_index < len(self.letters_today):
+
+        if self.current_letter_index < len(self.letters_today): # if you still ot letters to post
             current_letter = self.letters_today[self.current_letter_index]
-            current_letter.mail(mailbox.boxID)
+            current_letter.mail(mailbox.boxID) 
             mailbox.receiveMail(current_letter)
 
             self.letters_delivered += 1
@@ -200,6 +202,7 @@ class Game:
                 self.wrong_deliveries += 1
 
             self.current_letter_index += 1
+            self.update_letter_ui()
 
             # end early if all letters are posted FINI PARTI
             if self.current_letter_index >= len(self.letters_today):
@@ -208,21 +211,9 @@ class Game:
     def end_day(self):
         self.is_game_running = False
         self.timer_label.config(text="Day Over !")
-        
-        # Count unposted letters as wrong
-        unposted_letters = self.letters_today[self.current_letter_index:]
-        missed_count = len(unposted_letters)
-        self.wrong_deliveries += missed_count
-        self.letters_delivered += missed_count
-        self.missed_count += missed_count
-
-        # Push missed letters to next day
-        for letter in unposted_letters:
-            letter.day += 1
-            letter.is_mailed = False
-
+    
         total_today = len(self.letters_today)
-        posted_today = self.letters_delivered - self.missed_count
+        posted_today = self.letters_delivered
         self.letter_info_var.set(f"Posted {posted_today} / {total_today} letters | Score: {self.score} | Wrong: {self.wrong_deliveries}")
 
        # Is there any letters for future days ?
@@ -233,10 +224,8 @@ class Game:
             self.day_label.config(text=f"Day {self.current_day}")
             self.start_button.config(state="normal", text="Start Next Day")
         else:
-            never_posted = [l for l in self.all_letters if not l.is_mailed]
-            missed_total = len(never_posted)
 
-            self.letter_info_var.set(f"Game Over ! Final score: {self.score} | Wrong: {self.wrong_deliveries} | Missed forever: {missed_total}")
+            self.letter_info_var.set(f"Game Over ! Final score: {self.score} | Wrong: {self.wrong_deliveries}")
             self.timer_label.config(text="Game Over! All days finished.")
             self.day_label.config(text="All Days Complete")
             self.start_button.config(state="disabled")
