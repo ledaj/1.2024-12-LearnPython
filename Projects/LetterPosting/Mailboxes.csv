@@ -1,4 +1,8 @@
-boxID,address,color
-M1,Mr.Red,red
-M2,Mr.Green,green
-M3,Mr.White,white
+boxID,address,screen,color
+M1,Mr.Red,0,red
+M2,Ms.Green,0,green
+M3,Mr.White,1,white
+M4,Mx.Yellow,1,yellow
+M5,Ms.Blue,1,blue
+M6,Mr.Grey,2,grey
+M7,Ms.Orange,2,orange
