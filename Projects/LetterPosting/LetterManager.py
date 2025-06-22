@@ -11,7 +11,6 @@ Once you have no mail left, game over.
 
 #---- THERE WAS DATA
 
-
 ##--- LETTERS
 
 class Letter():
@@ -41,6 +40,7 @@ class Mailbox():
         self.containing.append(letter)
         self.has_mail = True
 
+
 ##--- PATH
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,7 +56,7 @@ class Game:
     def __init__(self, root):
         self.root = root
         self.root.title("mailPoster")
-        self.root.geometry("600x600")
+        self.root.geometry("800x600")
         
     # GAME STATE
         ## Score
