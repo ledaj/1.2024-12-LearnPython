@@ -1,6 +1,6 @@
 from tkinter import *
-from GUI import GameUI
-from Models import load_letters, load_mailboxes, letters_path, mailboxes_path
+from trash.reorg.GUIsh.reorg.GUI import GameUI
+from trash.reorg.Models import load_letters, load_mailboxes, letters_path, mailboxes_path
 
 class GameController:
     def __init__(self):
